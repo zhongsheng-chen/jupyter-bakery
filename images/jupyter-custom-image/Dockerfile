@@ -47,25 +47,28 @@ RUN update-alternatives --install /usr/bin/nano nano /bin/nano-tiny 10
 RUN rm -rf "/home/${NB_USER}/.cache/"
 
 # =====================================================
-# 锁定 PYTHON_VERSION（以 root 执行）
+# 注意：基础镜像已经包含 Python，不需要重复安装
 # =====================================================
-RUN mamba install --yes python=${PYTHON_VERSION} && \
-    mamba clean -afy
+# RUN mamba install --yes python=${PYTHON_VERSION} && \
+#     mamba clean -afy
 
 # =====================================================
 # 使用 mamba 安装科学计算核心库（以 root 用户执行）
 # =====================================================
+
+RUN mamba update --yes mamba && \
+    mamba clean -afy
+
 RUN mamba install --yes \
         numpy \
         pandas \
         scipy \
         scikit-learn \
         statsmodels \
-        matplotlib \
-        seaborn \
         xgboost \
         lightgbm \
-        sqlalchemy \
+        matplotlib \
+        seaborn \
     && mamba clean --all -f -y \
     && fix-permissions "${CONDA_DIR}" \
     && fix-permissions "/home/${NB_USER}"
